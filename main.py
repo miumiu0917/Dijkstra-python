@@ -4,11 +4,12 @@ import copy
 
 def _next(m):
   tmp = copy.deepcopy(m)
+  _updated = []
   for i, line in enumerate(m):
     for j, element in enumerate(line):
       if element == 'G' or type(element) is int:
-        _update(m, i, j)
-  if _finish(m, tmp):
+        _updated.append(_update(m, i, j))
+  if _finish(m, tmp) or not any(_updated):
     return m
   else:
     _next(m)
@@ -21,29 +22,26 @@ def _finish(m, tmp):
       if element == 'S':
         if type(m[i-1][j]) is int or type(m[i+1][j]) is int or type(m[i][j-1]) is int or type(m[i][j+1]) is int:
           _result = True
-
-  _same = True
-  for line1, line2 in zip(m, tmp):
-    for e1, e2 in zip(line1, line2):
-      if e1 != e2:
-        _same = False
-  if _same:
-    _result = True
   return _result
 
 
 
 def _update(m, i, j):
+  _updated = False
   index = _index(m[i][j])
   if _validate(m, i-1, j, index):
+    _updated = True
     m[i-1][j] = index
   if _validate(m, i+1, j, index):
+    _updated = True
     m[i+1][j] = index
   if _validate(m, i, j-1, index):
+    _updated = True
     m[i][j-1] = index
   if _validate(m, i, j+1, index):
+    _updated = True
     m[i][j+1] = index
-
+  return _updated
 
 def _validate(m, i, j, index):
   if m[i][j] in ['*', 'G', 'S']:
@@ -62,7 +60,7 @@ def _index(e):
 
 def _input():
   lines = []
-  with open('./data/input3.txt') as f:
+  with open('./data/input.txt') as f:
     for l in f.readlines(): 
       lines.append(list(l.rstrip('\n')))
   return lines
